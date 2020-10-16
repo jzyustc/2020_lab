@@ -48,15 +48,15 @@ class BaseNet(nn.Module):
 	# param2: record_num, iterate interval to record the loss and accuracy
 	def training_model(self, epoch_num: int, record_num: int, plot=False):
 
+		if len(self.train_data) % record_num != 0:
+			raise Exception('record_num should be divisivble by number of train data : %d' % len(self.train_data))
+
 		if self.criterion is None:
-			print("Criterion Not Setting!")
-			return
+			raise Exception("Criterion Not Setting!")
 		if self.optimizer is None:
-			print("Criterion Not Setting!")
-			return
+			raise Exception("Criterion Not Setting!")
 		if self.train_data is None:
-			print("Criterion Not Setting!")
-			return
+			raise Exception("Criterion Not Setting!")
 
 		print("start train:\n")
 
@@ -103,9 +103,10 @@ class BaseNet(nn.Module):
 					running_acc = 0.0
 
 					# plot
-					iter_data, loss_data, acc_data = self.monitor.select()
-					plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data)
-					plot_fig.show()
+					if plot:
+						iter_data, loss_data, acc_data = self.monitor.select()
+						plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data)
+						plot_fig.show()
 
 				iter += 1
 

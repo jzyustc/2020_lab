@@ -7,7 +7,7 @@ print("device : ", device, '\n')
 
 net = Net(8, device)
 
-net.training_model(10, 5000, plot=True)
+net.training_model(10, 1500, plot=True)
 
 print(len(net.plot_fig.record_acc))
 

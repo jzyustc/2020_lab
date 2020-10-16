@@ -9,6 +9,7 @@ We package some normal code here for using.
 
 - BaseNet : a class with basic elements for a image clssifier
 , including initial, train and test
+- Monitor : a subclass to monitor many values in training, such as loss and accuracy
 - Plot : a subclass of BaseNet, to plot during training
 - example : an example to use BaseNet
 
@@ -20,4 +21,9 @@ Here we save many resource and courses.
 
 - [MIT ConvNet course](https://cs231n.github.io/)
 - [ResNet Origin Paper](https://arxiv.org/abs/1512.03385) 
+- to be continued ...
+
+#### GAN
+
+- [GAN course](http://speech.ee.ntu.edu.tw/~tlkagk/courses_MLDS18.html)
 - to be continued ...
