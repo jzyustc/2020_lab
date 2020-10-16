@@ -1,6 +1,25 @@
-# Base Net Class for Classifier Net
+"""
+Base Net Class for Classifier Net
+
+including initial, train and test process of Classifier
+
+to use:
+# self.train_data, self.test_data = (Tensor)...
+# self.net = (Net Model)...
+# self.criterion = (Loss Function)...
+# self.optimizer = (Optimization)...
+
+optional :
+# self.lr_scheduler = (lr_scheduler)...
+
+to show how to use, please look at './example.py'
+"""
+# Last Modified : 2020/10/16, by jzy_ustc
+
 import torch.nn as nn
 from .plot import Plot
+from .Monitor import Monitor
+import time
 
 
 class BaseNet(nn.Module):
@@ -9,15 +28,14 @@ class BaseNet(nn.Module):
 	# param1 : Net Class
 	# param2 : batch_size
 	# param3 : device
-	def __init__(self, batch_size: int, device, plot=False):
+	def __init__(self, batch_size: int, device):
 		super(BaseNet, self).__init__()
 
 		self.device = device
 		self.batch_size = batch_size
-		self.plot = plot
-		self.plot_fig = Plot()
+		self.monitor = Monitor()
 
-
+		# the following part must be rewritten in the extended class
 		self.net = None
 		self.criterion = None
 		self.optimizer = None
@@ -28,33 +46,30 @@ class BaseNet(nn.Module):
 	# training model
 	# param1: epoch_num
 	# param2: record_num, iterate interval to record the loss and accuracy
-	def training_model(self, epoch_num: int, record_num: int):
+	def training_model(self, epoch_num: int, record_num: int, plot=False):
 
-		if self.criterion == None:
+		if self.criterion is None:
 			print("Criterion Not Setting!")
 			return
-		if self.optimizer == None:
+		if self.optimizer is None:
 			print("Criterion Not Setting!")
 			return
-		if self.train_data == None:
+		if self.train_data is None:
 			print("Criterion Not Setting!")
 			return
 
 		print("start train:\n")
 
-		if self.plot:
-			self.plot_fig.training_show()
-
-		self.plot_fig.record_iter = []
-		self.plot_fig.record_loss = []
-		self.plot_fig.record_acc = []
+		self.monitor.iter = []
+		self.monitor.loss = []
+		self.monitor.acc = []
 
 		running_loss = 0.0
 		running_acc = 0.0
-		iter = 0
 
 		for epoch in range(epoch_num):
 
+			iter = 0
 			for data in self.train_data:
 
 				inputs, labels = data
@@ -71,27 +86,26 @@ class BaseNet(nn.Module):
 				running_loss += loss.item()
 
 				_, pred = outputs.max(1)
-				num_correct = (pred == labels).sum()
-				acc = int(num_correct) / inputs.shape[0]
+				acc = int(sum(pred == labels)) / len(labels)
 				running_acc += acc
 
 				if iter % record_num == record_num - 1:
 					iter_num = epoch * len(self.train_data) + iter
-					print("iter num : " + str(iter_num * self.batch_size))
+					print("iter num : " + str(iter_num))
 					print("training loss : " + str(running_loss / record_num))
 					print("training accuracy : " + str(running_acc / record_num), '\n')
 
-					self.plot_fig.record_iter.append(iter_num * self.batch_size)
-					self.plot_fig.record_loss.append(running_loss / record_num)
-					self.plot_fig.record_acc.append(running_acc / record_num)
+					self.monitor.iter.append(iter_num * self.batch_size)
+					self.monitor.loss.append(running_loss / record_num)
+					self.monitor.acc.append(running_acc / record_num)
 
 					running_loss = 0.0
 					running_acc = 0.0
 
-					if self.plot:
-						print("plot!")
-						self.plot_fig.training_update()
-
+					# plot
+					iter_data, loss_data, acc_data = self.monitor.select()
+					plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data)
+					plot_fig.show()
 
 				iter += 1
 
@@ -103,7 +117,7 @@ class BaseNet(nn.Module):
 	# testing model
 	def testing_model(self):
 
-		if self.test_data == None:
+		if self.test_data is None:
 			print("Criterion Not Setting!")
 			return
 
@@ -125,8 +139,7 @@ class BaseNet(nn.Module):
 			running_loss += loss.item()
 
 			_, pred = outputs.max(1)
-			iter_correct = (pred == labels).sum()
-			acc = int(iter_correct) / inputs.shape[0]
+			acc = int(sum(pred == labels)) / len(labels)
 			running_acc += acc
 			iter += 1
 

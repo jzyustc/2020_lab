@@ -1,5 +1,12 @@
-# an example to use the BaseNet Class
-# an easy ConvNet to train FashionMNIST, with CrossEntropyLoss, SGD
+"""
+an example to use the BaseNet Class
+
+an easy ConvNet to train FashionMNIST, with CrossEntropyLoss, SGD
+
+load data by torchvision package
+"""
+# Last Modified : 2020/10/16, by jzy_ustc
+
 from classifier.BaseNet import BaseNet
 import torch
 import torch.nn as nn
@@ -13,8 +20,8 @@ import torch.optim as optim
 
 class Net(BaseNet):
 
-	def __init__(self, batch_size, device, plot=False):
-		super(Net, self).__init__(batch_size, device, plot)
+	def __init__(self, batch_size, device):
+		super(Net, self).__init__(batch_size, device)
 
 		self.train_data, self.test_data = self.load(batch_size)
 
