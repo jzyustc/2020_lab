@@ -12,12 +12,12 @@ to use:
 optional :
 # self.lr_scheduler = (lr_scheduler)...
 
-to show how to use, please look at './example.py'
+to show how to use, please look at './ConvNet.py'
 """
 # Last Modified : 2020/10/16, by jzy_ustc
 
 import torch.nn as nn
-from .plot import Plot
+from .Plot import Plot
 from .Monitor import Monitor
 import time
 
@@ -119,8 +119,7 @@ class BaseNet(nn.Module):
 	def testing_model(self):
 
 		if self.test_data is None:
-			print("Criterion Not Setting!")
-			return
+			raise Exception("Criterion Not Setting!")
 
 		running_loss = 0.0
 		running_acc = 0.0

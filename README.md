@@ -11,6 +11,7 @@ We package some normal code here for using.
 , including initial, train and test
 - Monitor : a subclass to monitor many values in training, such as loss and accuracy
 - Plot : a subclass of BaseNet, to plot during training
+- operation : some operations, such as load the raw data
 - example : an example to use BaseNet
 
 
