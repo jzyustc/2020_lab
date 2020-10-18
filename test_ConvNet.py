@@ -5,7 +5,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = ConvNet(8, device)
+net = ConvNet(64, device)
 
 net.training_model(10, 1500, plot=True)
 
