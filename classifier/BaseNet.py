@@ -16,10 +16,10 @@ to show how to use, please look at './ConvNet.py'
 """
 # Last Modified : 2020/10/16, by jzy_ustc
 
+import random
 import torch.nn as nn
 from .Plot import Plot
 from .Monitor import Monitor
-import time
 
 
 class BaseNet(nn.Module):
@@ -48,9 +48,6 @@ class BaseNet(nn.Module):
 	# param2: record_num, iterate interval to record the loss and accuracy
 	def training_model(self, epoch_num: int, record_num: int, plot=False):
 
-		if len(self.train_data) % record_num != 0:
-			raise Exception('record_num should be divisivble by number of train data : %d' % len(self.train_data))
-
 		if self.criterion is None:
 			raise Exception("Criterion Not Setting!")
 		if self.optimizer is None:
@@ -64,14 +61,19 @@ class BaseNet(nn.Module):
 		self.monitor.loss = []
 		self.monitor.acc = []
 
-		running_loss = 0.0
-		running_acc = 0.0
+		self.running_loss = 0.0
+		self.running_acc = 0.0
 
 		for epoch in range(epoch_num):
 
 			iter = 0
+
+			# shuffle all of the dataset
+			random.shuffle(self.train_data)
+
 			for data in self.train_data:
 
+				iter += 1
 				inputs, labels = data
 				inputs = inputs.to(self.device)
 				labels = labels.to(self.device)
@@ -83,37 +85,42 @@ class BaseNet(nn.Module):
 				loss.backward()
 				self.optimizer.step()
 
-				running_loss += loss.item()
+				self.running_loss += loss.item()
 
 				_, pred = outputs.max(1)
 				acc = int(sum(pred == labels)) / len(labels)
-				running_acc += acc
+				self.running_acc += acc
 
-				if iter % record_num == record_num - 1:
-					iter_num = epoch * len(self.train_data) + iter
-					print("iter num : " + str(iter_num))
-					print("training loss : " + str(running_loss / record_num))
-					print("training accuracy : " + str(running_acc / record_num), '\n')
+				if iter % record_num == 0:
+					self.record_one_train_result(epoch, iter, record_num, plot)
 
-					self.monitor.iter.append(iter_num * self.batch_size)
-					self.monitor.loss.append(running_loss / record_num)
-					self.monitor.acc.append(running_acc / record_num)
-
-					running_loss = 0.0
-					running_acc = 0.0
-
-					# plot
-					if plot:
-						iter_data, loss_data, acc_data = self.monitor.select()
-						plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data)
-						plot_fig.show()
-
-				iter += 1
+			# record all not shown data in this epoch
+			self.record_one_train_result(epoch, iter, iter % record_num, plot)
 
 			if self.lr_scheduler is not None:
 				self.lr_scheduler.step()
 
 		print("finished training\n\n")
+
+	# record data (including adding to Monitor and Plot) once in training
+	def record_one_train_result(self, epoch: int, iter: int, record_num: int, plot=False):
+		iter_num = epoch * len(self.train_data) + iter
+		print("iter num : " + str(iter_num))
+		print("training loss : " + str(self.running_loss / record_num))
+		print("training accuracy : " + str(self.running_acc / record_num), '\n')
+
+		self.monitor.iter.append(iter_num * self.batch_size)
+		self.monitor.loss.append(self.running_loss / record_num)
+		self.monitor.acc.append(self.running_acc / record_num)
+
+		self.running_loss = 0.0
+		self.running_acc = 0.0
+
+		# plot
+		if plot:
+			iter_data, loss_data, acc_data = self.monitor.select()
+			plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data)
+			plot_fig.show()
 
 	# testing model
 	def testing_model(self):
