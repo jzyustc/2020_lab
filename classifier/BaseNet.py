@@ -17,6 +17,7 @@ to show how to use, please look at './ConvNet.py'
 # Last Modified : 2020/10/16, by jzy_ustc
 
 import random
+import time
 import torch.nn as nn
 from .Plot import Plot
 from .Monitor import Monitor
@@ -46,7 +47,7 @@ class BaseNet(nn.Module):
 	# training model
 	# param1: epoch_num
 	# param2: record_num, iterate interval to record the loss and accuracy
-	def training_model(self, epoch_num: int, record_num: int, plot=False):
+	def training_model(self, epoch_num: int, record_num: int, plot=False, timer=False):
 
 		if self.criterion is None:
 			raise Exception("Criterion Not Setting!")
@@ -63,6 +64,8 @@ class BaseNet(nn.Module):
 
 		self.running_loss = 0.0
 		self.running_acc = 0.0
+
+		start_time = time.time()
 
 		for epoch in range(epoch_num):
 
@@ -100,7 +103,8 @@ class BaseNet(nn.Module):
 			if self.lr_scheduler is not None:
 				self.lr_scheduler.step()
 
-		print("finished training\n\n")
+		if timer : print("finished training, using %d seconds\n\n"%(time.time()-start_time))
+		else : print("finished training\n\n")
 
 	# record data (including adding to Monitor and Plot) once in training
 	def record_one_train_result(self, epoch: int, iter: int, record_num: int, plot=False):
@@ -123,7 +127,7 @@ class BaseNet(nn.Module):
 			plot_fig.show()
 
 	# testing model
-	def testing_model(self):
+	def testing_model(self, timer=False):
 
 		if self.test_data is None:
 			raise Exception("Criterion Not Setting!")
@@ -134,6 +138,8 @@ class BaseNet(nn.Module):
 		self.eval()
 
 		iter = 0
+
+		start_time = time.time()
 
 		for data in self.test_data:
 			inputs, labels = data
@@ -149,5 +155,8 @@ class BaseNet(nn.Module):
 			acc = int(sum(pred == labels)) / len(labels)
 			running_acc += acc
 			iter += 1
+
+
+		if timer : print("finished testing, using %d seconds\n\n" % (time.time() - start_time))
 
 		return running_loss / iter, running_acc / iter
