@@ -3,3 +3,6 @@
 
 # pytorch dataset
 data/*
+
+# trained models
+*.pth
