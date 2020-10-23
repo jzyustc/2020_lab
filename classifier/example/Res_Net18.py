@@ -30,7 +30,7 @@ class BasicBlock(nn.Module):
 
 		self.conv2 = nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=3, padding=1)
 
-		self.relu = nn.ReLU()
+		self.relu = nn.ReLU(inplace=True)
 		self.bn = nn.BatchNorm2d(out_channels)
 
 	def forward(self, x):
@@ -40,8 +40,10 @@ class BasicBlock(nn.Module):
 		x = self.relu(self.bn(self.conv1(x)))
 		x = self.bn(self.conv2(x))
 
-		x += identity if self.downsample is None else self.downsample(identity)
+		if self.downsample is not None:
+			identity = self.downsample(identity)
 
+		x += identity
 		x = self.relu(x)
 
 		return x
@@ -54,19 +56,20 @@ class ResNet_18(BaseNet):
 
 		self.train_data, self.test_data = self.load(batch_size)
 
-		## [3,32,32] : [64,32,32]
+		## [3,32,32] : [64,32,32] [64,16,16]
 		self.conv = nn.Conv2d(3, 64, kernel_size=3, padding=1)
 		self.bn = nn.BatchNorm2d(64)
 		self.relu = nn.ReLU()
 
-		## [64,32,32] : [128,16,16] [256,8,8] [512,4,4]
+		self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+
+		## [64,16,16] : [128,8,8] [256,4,4]
 		self.layer1 = nn.Sequential(BasicBlock(64, 128), BasicBlock(128, 128))
 		self.layer2 = nn.Sequential(BasicBlock(128, 256), BasicBlock(256, 256))
-		self.layer3 = nn.Sequential(BasicBlock(256, 512), BasicBlock(512, 512))
 
 		## [512,4,4] : [512,1,1] [10,1,1]
 		self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-		self.fc = nn.Linear(512, 10)
+		self.fc = nn.Linear(256, 10)
 
 		self.net_setting()
 
@@ -77,11 +80,11 @@ class ResNet_18(BaseNet):
 
 	def forward(self, x):
 		x = self.relu(self.bn(self.conv(x)))
+		x = self.pool(x)
 		x = self.layer1(x)
 		x = self.layer2(x)
-		x = self.layer3(x)
 		x = self.avgpool(x)
-		x = x.view(-1, 512)
+		x = x.view(-1, 256)
 		x = self.fc(x)
 		return x
 
