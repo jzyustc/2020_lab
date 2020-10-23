@@ -58,6 +58,8 @@ class BaseNet(nn.Module):
 
 		print("start train:\n")
 
+		self.train()
+
 		self.monitor.iter = []
 		self.monitor.loss = []
 		self.monitor.acc = []
