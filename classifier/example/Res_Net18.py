@@ -27,18 +27,19 @@ class BasicBlock(nn.Module):
 
 		self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=3,
 							   stride=1 if self.downsample is None else 2, padding=1)
+		self.bn1 = nn.BatchNorm2d(out_channels)
 
 		self.conv2 = nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=3, padding=1)
+		self.bn2 = nn.BatchNorm2d(out_channels)
 
 		self.relu = nn.ReLU(inplace=True)
-		self.bn = nn.BatchNorm2d(out_channels)
 
 	def forward(self, x):
 
 		identity = x
 
-		x = self.relu(self.bn(self.conv1(x)))
-		x = self.bn(self.conv2(x))
+		x = self.relu(self.bn1(self.conv1(x)))
+		x = self.bn2(self.conv2(x))
 
 		if self.downsample is not None:
 			identity = self.downsample(identity)
