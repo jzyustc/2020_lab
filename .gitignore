@@ -2,7 +2,7 @@
 .idea
 
 # pytorch dataset
-data/*
+classifier/example/test_model/data/*
 
 # trained models
 *.pth

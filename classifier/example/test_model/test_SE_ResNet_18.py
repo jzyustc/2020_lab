@@ -1,11 +1,11 @@
 import torch
-from classifier.example.Dense_Net121 import DenseNet
+from ..SE_Net18 import SE_ResNet_18
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = DenseNet(8, device)
+net = SE_ResNet_18(8, device)
 
 net.training_model(10, 1500, plot=True, timer=True)
 

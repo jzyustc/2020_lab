@@ -1,11 +1,11 @@
 import torch
-from classifier.example.SE_Net18 import SE_ResNet_18
+from ..Moblie_Net import MobileNet_v2
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = SE_ResNet_18(8, device)
+net = MobileNet_v2(8, device)
 
 net.training_model(10, 1500, plot=True, timer=True)
 

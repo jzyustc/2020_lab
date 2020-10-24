@@ -1,5 +1,5 @@
 import torch
-from classifier.example.ConvNet import ConvNet
+from ..ConvNet import ConvNet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

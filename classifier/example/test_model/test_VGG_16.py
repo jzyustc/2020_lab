@@ -1,11 +1,11 @@
 import torch
-from classifier.example.Res_Net18 import ResNet_18
+from ..VGG_16 import VGG_16
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = ResNet_18(8, device)
+net = VGG_16(8, device)
 
 net.training_model(10, 1500, plot=True, timer=True)
 

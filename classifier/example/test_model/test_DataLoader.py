@@ -1,6 +1,6 @@
 from classifier.operation.DataLoader import DataLoader
 
-path = "classifier/example/test_data"
+path = "../test_data"
 
 data_loader = DataLoader(path, 2, grayscale=True, droplast=True)
 

@@ -1,11 +1,11 @@
 import torch
-from classifier.example.Moblie_Net import MobileNet_v2
+from ..Dense_Net121 import DenseNet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = MobileNet_v2(8, device)
+net = DenseNet(8, device)
 
 net.training_model(10, 1500, plot=True, timer=True)
 

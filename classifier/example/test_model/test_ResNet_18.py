@@ -1,11 +1,11 @@
 import torch
-from classifier.example.PNAS_Net import PNASNet5
+from ..Res_Net18 import ResNet_18
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = PNASNet5(8, device)
+net = ResNet_18(8, device)
 
 net.training_model(10, 1500, plot=True, timer=True)
 

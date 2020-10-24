@@ -1,11 +1,11 @@
 import torch
-from classifier.example.GoogLeNet import GoogLeNet
+from ..LeNet_5 import LeNet_5
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = GoogLeNet(8, device, aux_logits=False)
+net = LeNet_5(8, device)
 
 net.training_model(10, 1500, plot=True, timer=True)
 

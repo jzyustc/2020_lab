@@ -1,11 +1,11 @@
 import torch
-from classifier.example.LeNet_5 import LeNet_5
+from ..DPN92 import DPNNet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print("device : ", device, '\n')
 
-net = LeNet_5(8, device)
+net = DPNNet(8, device)
 
 net.training_model(10, 1500, plot=True, timer=True)
 
