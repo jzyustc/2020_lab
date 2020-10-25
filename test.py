@@ -1,29 +1,5 @@
-"""
-A class to plot the monitor result in training
-
-support monitor data type :
-
-- Loss - iteration
-- Accuracy - iteration
-- to be continued ...
-
-support test data plot (select)
-
-
-to use:
-
-# plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data)
-# plot_fig.show()
-
-# with test data shown:
-# plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data,
-# 				acc_test=acc_data_test, loss_test=loss_data_test)
-# plot_fig.show()
-
-"""
-# Last Modifined : 2020/10/25 jzy_ustc
-
 import matplotlib.pyplot as plt
+import os
 
 
 class Plot:
@@ -94,3 +70,15 @@ class Plot:
 	# show figure
 	def show(self):
 		plt.show()
+
+
+iter_data = [0, 100, 200, 300, 400]
+loss_data = [0, 10, 20, 30, 40]
+acc_data = [0, 100, 200, 300, 400]
+loss_data_test = [0, 5, 10, 15, 20]
+acc_data_test = [0, 50, 100, 200, 300]
+
+plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data, acc_test=acc_data_test,
+				loss_test=loss_data_test)
+
+plot_fig.show()

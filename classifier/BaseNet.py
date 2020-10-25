@@ -48,7 +48,7 @@ class BaseNet(nn.Module):
 	# training model
 	# param1: epoch_num
 	# param2: record_num, iterate interval to record the loss and accuracy
-	def training_model(self, epoch_num: int, record_num: int, plot=False, timer=False):
+	def training_model(self, epoch_num: int, record_num: int, plot=False, timer=False, test=False, test_num=1000):
 
 		self.epoch_num = epoch_num
 
@@ -100,10 +100,10 @@ class BaseNet(nn.Module):
 				self.running_acc += acc
 
 				if iter % record_num == 0:
-					self.record_one_train_result(epoch, iter, record_num, plot)
+					self.record_one_train_result(epoch, iter, record_num, plot, test, test_num)
 
 			# record all not shown data in this epoch
-			self.record_one_train_result(epoch, iter, iter % record_num, plot)
+			self.record_one_train_result(epoch, iter, iter % record_num, plot, test, test_num)
 
 			if self.lr_scheduler is not None:
 				self.lr_scheduler.step()
@@ -114,11 +114,11 @@ class BaseNet(nn.Module):
 			print("finished training\n\n")
 
 	# record data (including adding to Monitor and Plot) once in training
-	def record_one_train_result(self, epoch: int, iter: int, record_num: int, plot=False):
+	def record_one_train_result(self, epoch: int, iter: int, record_num: int, plot=False, test=False, test_num=None):
 		iter_num = epoch * len(self.train_data) + iter
 		print("iter num : " + str(iter_num))
 		print("training loss : " + str(self.running_loss / record_num))
-		print("training accuracy : " + str(self.running_acc / record_num), '\n')
+		print("training accuracy : " + str(self.running_acc / record_num))
 
 		self.monitor.iter.append(iter_num * self.batch_size)
 		self.monitor.loss.append(self.running_loss / record_num)
@@ -127,14 +127,29 @@ class BaseNet(nn.Module):
 		self.running_loss = 0.0
 		self.running_acc = 0.0
 
+		# test
+		if test:
+			running_loss_test, running_acc_test = self.testing_model(timer=False, num=test_num)
+			self.monitor.acc_test.append(running_acc_test)
+			self.monitor.loss_test.append(running_loss_test)
+			print("testing loss : " + str(running_loss_test))
+			print("testing accuracy : " + str(running_acc_test))
+
 		# plot
 		if plot:
 			iter_data, loss_data, acc_data = self.monitor.select()
-			plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data)
+			if test:
+				iter_data_test, loss_data_test, acc_data_test = self.monitor.select_test()
+			else:
+				iter_data_test, loss_data_test, acc_data_test = None, None, None
+			plot_fig = Plot(['loss', 'acc'], iter=iter_data, loss=loss_data, acc=acc_data, loss_test=loss_data_test,
+							acc_test=acc_data_test)
 			plot_fig.show()
 
+		print("\n")
+
 	# testing model
-	def testing_model(self, timer=False):
+	def testing_model(self, timer=False, num=None):
 
 		if self.test_data is None:
 			raise Exception("Criterion Not Setting!")
@@ -148,6 +163,7 @@ class BaseNet(nn.Module):
 
 		start_time = time.time()
 
+		random.shuffle(self.test_data)
 		for data in self.test_data:
 			inputs, labels = data
 			inputs = inputs.to(self.device)
@@ -162,6 +178,8 @@ class BaseNet(nn.Module):
 			acc = int(sum(pred == labels)) / len(labels)
 			running_acc += acc
 			iter += 1
+
+			if num is not None and iter > num: break
 
 		if timer: print("finished testing, using %d seconds\n\n" % (time.time() - start_time))
 

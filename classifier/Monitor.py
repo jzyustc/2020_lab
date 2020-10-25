@@ -15,10 +15,16 @@ class Monitor:
 		self.iter = []
 		self.loss = []
 		self.acc = []
+		self.loss_test = []
+		self.acc_test = []
 
 	# TODO : select
 	def select(self):
 		return self.iter, self.loss, self.acc
+
+	# TODO : select test data
+	def select_test(self):
+		return self.iter, self.loss_test, self.acc_test
 
 	# TODO : output
 	def output(self, output_file_path):
