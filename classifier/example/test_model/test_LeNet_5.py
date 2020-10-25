@@ -1,5 +1,5 @@
 import torch
-from ..LeNet_5 import LeNet_5
+from classifier.example.LeNet_5 import LeNet_5
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

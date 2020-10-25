@@ -1,5 +1,5 @@
 import torch
-from ..VGG_16 import VGG_16
+from classifier.example.VGG_16 import VGG_16
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

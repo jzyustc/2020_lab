@@ -1,5 +1,5 @@
 import torch
-from ..DPN92 import DPNNet
+from classifier.example.DPN92 import DPNNet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

@@ -1,5 +1,5 @@
 import torch
-from ..PNAS_Net import PNASNet5
+from classifier.example.PNAS_Net import PNASNet5
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

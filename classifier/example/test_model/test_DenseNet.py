@@ -1,5 +1,5 @@
 import torch
-from ..Dense_Net121 import DenseNet
+from classifier.example.Dense_Net121 import DenseNet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

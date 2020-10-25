@@ -1,5 +1,5 @@
 import torch
-from ..SE_Net18 import SE_ResNet_18
+from classifier.example.SE_Net18 import SE_ResNet_18
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

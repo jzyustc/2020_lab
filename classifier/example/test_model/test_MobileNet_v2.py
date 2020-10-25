@@ -1,5 +1,5 @@
 import torch
-from ..Moblie_Net import MobileNet_v2
+from classifier.example.Moblie_Net import MobileNet_v2
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
